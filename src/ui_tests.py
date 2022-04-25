@@ -6,28 +6,77 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-class UITests:
+class PageObjects:
     def __init__(self, driver):
         self.driver = driver
+
+    def search_input(self):
+        return self.driver.find_element(by=By.NAME, value='search')
+
+    def add_to_cart_button(self):
+        return self.driver.find_element(by=By.XPATH, value='//*[@id="content"]/div[3]/div/div/div[2]/div[2]/button[1]')
+
+    def shopping_cart(self):
+        return self.driver.find_element(by=By.CLASS_NAME, value='fa-shopping-cart')
+
+    def remove_button(self):
+        return self.driver.find_element(by=By.XPATH,
+                                        value='//*[@id="content"]/form/div/table/tbody/tr/td[4]/div/span/button[2]')
+
+    def continue_button(self):
+        return self.driver.find_element(by=By.LINK_TEXT, value='Continue')
+
+    def update_button(self):
+        return self.driver.find_element(by=By.CLASS_NAME, value='fa-refresh')
+
+    def coupon_button(self):
+        return self.driver.find_element(by=By.LINK_TEXT, value='Use Coupon Code')
+
+    def coupon_input(self):
+        return self.driver.find_element(by=By.ID, value='input-coupon')
+
+    def apply_coupon_button(self):
+        return self.driver.find_element(by=By.ID, value='button-coupon')
+
+    def certificate_button(self):
+        return self.driver.find_element(by=By.LINK_TEXT, value='Use Gift Certificate')
+
+    def certificate_input(self):
+        return self.driver.find_element(by=By.ID, value='input-voucher')
+
+    def apply_certificate_button(self):
+        return self.driver.find_element(by=By.ID, value='button-voucher')
+
+    def continue_shopping_button(self):
+        return self.driver.find_element(by=By.LINK_TEXT, value='Continue Shopping')
+
+    def checkout_button(self):
+        return self.driver.find_element(by=By.LINK_TEXT, value='Checkout')
+
+
+class UITests:
+    def __init__(self, driver, page_objects):
+        self.driver = driver
+        self.page_objects = page_objects
         self.test_search_results()
 
     def test_search_results(self):
         """Результаты поисковой выдачи"""
-        search_input = self.driver.find_element(by=By.NAME, value='search')
+        search_input = self.page_objects.search_input()
         search_input.send_keys('macbook')
         search_input.send_keys(Keys.RETURN)
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Search - macbook' in self.driver.page_source
 
-        search_input = self.driver.find_element(by=By.NAME, value='search')
+        search_input = self.page_objects.search_input()
         search_input.clear()
 
         search_input.send_keys('iphone')
         search_input.send_keys(Keys.RETURN)
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Search - iphone' in self.driver.page_source
 
@@ -36,16 +85,15 @@ class UITests:
 
     def test_add_to_cart(self):
         """Добавление в корзину"""
-        add_to_cart_button = self.driver.find_element(by=By.XPATH,
-                                                      value='//*[@id="content"]/div[3]/div/div/div[2]/div[2]/button[1]')
+        add_to_cart_button = self.page_objects.add_to_cart_button()
         add_to_cart_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        shopping_cart = self.driver.find_element(by=By.CLASS_NAME, value='fa-shopping-cart')
+        shopping_cart = self.page_objects.shopping_cart()
         shopping_cart.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Shopping Cart' in self.driver.page_source
         assert 'Image' in self.driver.page_source
@@ -60,11 +108,10 @@ class UITests:
 
     def test_delete_from_cart(self):
         """Удаление из корзины"""
-        remove_button = self.driver.find_element(by=By.XPATH,
-                                                 value='//*[@id="content"]/form/div/table/tbody/tr/td[4]/div/span/button[2]')
+        remove_button = self.page_objects.remove_button()
         remove_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Shopping Cart' in self.driver.page_source
         assert 'Your shopping cart is empty!' in self.driver.page_source
@@ -74,10 +121,10 @@ class UITests:
 
     def test_return_after_deletion(self):
         """Возвращение в магазин из пустой корзины"""
-        continue_button = self.driver.find_element(by=By.LINK_TEXT, value='Continue')
+        continue_button = self.page_objects.continue_button()
         continue_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Your Store' in self.driver.page_source
         assert 'Featured' in self.driver.page_source
@@ -88,27 +135,26 @@ class UITests:
 
     def test_update(self):
         """Обновление товара по кнопке update"""
-        search_input = self.driver.find_element(by=By.NAME, value='search')
+        search_input = self.page_objects.search_input()
         search_input.send_keys('macbook')
         search_input.send_keys(Keys.RETURN)
 
-        time.sleep(10)
+        time.sleep(5)
 
-        add_to_cart_button = self.driver.find_element(by=By.XPATH,
-                                                      value='//*[@id="content"]/div[3]/div/div/div[2]/div[2]/button[1]')
+        add_to_cart_button = self.page_objects.add_to_cart_button()
         add_to_cart_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        shopping_cart = self.driver.find_element(by=By.CLASS_NAME, value='fa-shopping-cart')
+        shopping_cart = self.page_objects.shopping_cart()
         shopping_cart.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        update_button = self.driver.find_element(by=By.CLASS_NAME, value='fa-refresh')
+        update_button = self.page_objects.update_button()
         update_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Success: You have modified your shopping cart!' in self.driver.page_source
 
@@ -117,17 +163,17 @@ class UITests:
 
     def test_coupon(self):
         """Ввод номера купона"""
-        coupon_button = self.driver.find_element(by=By.LINK_TEXT, value='Use Coupon Code')
+        coupon_button = self.page_objects.coupon_button()
         coupon_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        coupon_input = self.driver.find_element(by=By.ID, value='input-coupon')
+        coupon_input = self.page_objects.coupon_input()
         coupon_input.send_keys('88888')
-        apply_button = self.driver.find_element(by=By.ID, value='button-coupon')
+        apply_button = self.page_objects.apply_coupon_button()
         apply_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Coupon is either invalid, expired or reached its usage limit!' in self.driver.page_source
 
@@ -136,17 +182,17 @@ class UITests:
 
     def test_certificate(self):
         """Ввод номера подарочного сертификата"""
-        certificate_button = self.driver.find_element(by=By.LINK_TEXT, value='Use Gift Certificate')
+        certificate_button = self.page_objects.certificate_button()
         certificate_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        certificate_input = self.driver.find_element(by=By.ID, value='input-voucher')
+        certificate_input = self.page_objects.certificate_input()
         certificate_input.send_keys('12345')
-        apply_button = self.driver.find_element(by=By.ID, value='button-voucher')
+        apply_button = self.page_objects.apply_certificate_button()
         apply_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Gift Certificate is either invalid or the balance has been used up!' in self.driver.page_source
 
@@ -155,10 +201,10 @@ class UITests:
 
     def test_continue_shopping(self):
         """Продолжение покупок после добавления товара в корзину"""
-        continue_shopping_button = self.driver.find_element(by=By.LINK_TEXT, value='Continue Shopping')
+        continue_shopping_button = self.page_objects.continue_shopping_button()
         continue_shopping_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         assert 'Your Store' in self.driver.page_source
         assert 'Featured' in self.driver.page_source
@@ -169,15 +215,15 @@ class UITests:
 
     def test_checkout(self):
         """Оплата товара"""
-        shopping_cart = self.driver.find_element(by=By.CLASS_NAME, value='fa-shopping-cart')
+        shopping_cart = self.page_objects.shopping_cart()
         shopping_cart.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
-        checkout_button = self.driver.find_element(by=By.LINK_TEXT, value='Checkout')
+        checkout_button = self.page_objects.checkout_button()
         checkout_button.click()
 
-        time.sleep(10)
+        time.sleep(5)
 
         if '***' in self.driver.page_source:
             assert 'Products marked with *** are not available' in self.driver.page_source
@@ -199,5 +245,6 @@ class UITests:
 if __name__ == '__main__':
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get('http://tutorialsninja.com/demo/')
-    tests = UITests(driver)
+    page_objects = PageObjects(driver)
+    tests = UITests(driver, page_objects)
     driver.close()
